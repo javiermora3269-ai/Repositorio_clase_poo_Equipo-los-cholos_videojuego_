@@ -2,44 +2,24 @@
 #include <string>
 using namespace std;
 
-void Output()
+class InterfazUsuario
 {
-    string texto = "Bienvenido al juego.\n"
-                   "Elige una opcion para continuar.\n";
+public:
 
-    cout << texto;
-}
-
-int Input(int LimInferior, int LimSuperior, string Pregunta)
-{
-    int Opcion;
-
-    do
+    void Output(string texto)
     {
-        cout << Pregunta;
-        cin >> Opcion;
-
-        if (Opcion < LimInferior || Opcion > LimSuperior)
-        {
-            cout << "Opcion no valida. Intenta de nuevo.\n";
-        }
-
-    } while (Opcion < LimInferior || Opcion > LimSuperior);
-
-    return Opcion;
-}
+        cout << texto;
+    }
+};
 
 int main()
 {
-    Output();
+    InterfazUsuario UI;
 
-    int opcion = Input(1, 3,
-        "1. Atacar\n"
-        "2. Actuar\n"
-        "3. Curar\n"
-        "Selecciona una opcion: ");
+    string texto = "Bienvenido al juego.\n"
+                   "Elige una opcion para continuar.\n";
 
-    cout << "Elegiste la opcion: " << opcion << endl;
+    UI.Output(texto);
 
     return 0;
 }
