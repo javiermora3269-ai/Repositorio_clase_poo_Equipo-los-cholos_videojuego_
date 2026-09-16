@@ -58,10 +58,11 @@ int main(){
 
     /* Se crea la interfaz de usuario UI */
     UserInterface UI;
+    std::string texto = "Bienvenido al juego.";
 
     /* Codigo de prueba. Los testers pueden jugar con las funciones de UI como quieran para encontrar errores */
-    UI.Output("Estas dentro del juego.");
-    UI.Input(1, 3, "Que opcion deseas escojer?");
+    UI.Output(texto);
+    UI.Input(1, 3, "Elije una opcion para continuar: ");
     std::cout << UI.GetOption() << std::endl; /* Ejemplo para poner a prueba 'UI.GetOption()' */
     UI.Output("Has escogido la opcion!");
     UI.Input(-1, 2, "Que opcion deseas escojer?");
