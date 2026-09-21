@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <limits>
 
 class UserInterface{
 private:
@@ -40,7 +41,7 @@ public:
             /* Si el usuario mete alguna letra o numero indeseado, se ejecutara el "if" para evitar errores futuros */
             if(std::cin.fail() || std::cin.peek() != '\n'){ 
                 std::cin.clear();
-                std::cin.ignore(100 /* Rango de limpieza de 100 caracteres */, '\n');
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max() /* Rango de limpieza */, '\n');
                 Option = InferiorLimit-1;
             }
 
