@@ -1,1 +1,255 @@
 En este folder, Erick actualizara sus avances personales del proyecto para que todos los podamos ver y asi ver que podemos agregar al proyecto final.
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+class Criatura {
+private:
+    string nombre;
+    string tipo;
+    int vida;
+    int energia;
+    int ataque;
+    int defensa;
+    int nivel;
+    int experiencia;
+
+    static const int VIDA_MAX = 100;
+    static const int ENERGIA_MAX = 100;
+    static const int EXP_PARA_SUBIR = 50;
+
+public:
+    Criatura() {
+        nombre = "Criatura";
+        tipo = "Neutro";
+        vida = 100;
+        energia = 50;
+        ataque = 10;
+        defensa = 5;
+        nivel = 1;
+        experiencia = 0;
+    }
+
+    Criatura(string nombre, string tipo, int vida, int energia, int ataque, int defensa) {
+        this->nombre = nombre;
+        this->tipo = tipo;
+        setVida(vida);
+        setEnergia(energia);
+        this->ataque = ataque;
+        this->defensa = defensa;
+        nivel = 1;
+        experiencia = 0;
+    }
+
+    ~Criatura() {
+        cout << "[Destructor] " << nombre << " ha sido destruida." << endl;
+    }
+
+    string getNombre() const { return nombre; }
+    string getTipo() const { return tipo; }
+    int getVida() const { return vida; }
+    int getEnergia() const { return energia; }
+    int getAtaque() const { return ataque; }
+    int getDefensa() const { return defensa; }
+    int getNivel() const { return nivel; }
+    int getExperiencia() const { return experiencia; }
+
+    void setVida(int v) {
+        if (v < 0) v = 0;
+        if (v > VIDA_MAX) v = VIDA_MAX;
+        vida = v;
+    }
+
+    void setEnergia(int e) {
+        if (e < 0) e = 0;
+        if (e > ENERGIA_MAX) e = ENERGIA_MAX;
+        energia = e;
+    }
+
+    void setDefensa(int d) {
+        if (d < 0) d = 0;
+        defensa = d;
+    }
+
+    void atacar(Criatura &objetivo) {
+        cout << nombre << " ataca a " << objetivo.getNombre()
+             << " con " << ataque << " de poder." << endl;
+        objetivo.recibirDanio(ataque);
+    }
+
+    void atacarEspecial(Criatura &objetivo) {
+        int costoEnergia = 15;
+        if (energia < costoEnergia) {
+            cout << nombre << " no tiene energia suficiente para un ataque especial." << endl;
+            atacar(objetivo);
+            return;
+        }
+        int energiaResultante = energia - costoEnergia;
+        setEnergia(energiaResultante);
+        int golpeEspecial = ataque * 2;
+        cout << nombre << " lanza un ataque especial de " << golpeEspecial
+             << " puntos sobre " << objetivo.getNombre() << "!" << endl;
+        objetivo.recibirDanio(golpeEspecial);
+    }
+
+    void recibirDanio(int danio) {
+        int reduccion = danio - defensa;
+        if (reduccion < 1) reduccion = 1;
+        int vidaResultante = vida - reduccion;
+        setVida(vidaResultante);
+    }
+
+    void descansar() {
+        int energiaResultante = energia + 20;
+        setEnergia(energiaResultante);
+        cout << nombre << " descansa. Energia actual: " << energia << endl;
+    }
+
+    void curar(int cantidad) {
+        int nuevaVida = vida + cantidad;
+        setVida(nuevaVida);
+        cout << nombre << " se cura. Vida actual: " << vida << endl;
+    }
+
+    void ganarExperiencia(int cantidad) {
+        int expResultante = experiencia + cantidad;
+        experiencia = expResultante;
+        if (experiencia >= EXP_PARA_SUBIR) {
+            int excedente = experiencia - EXP_PARA_SUBIR;
+            experiencia = excedente;
+            subirNivel();
+        }
+    }
+
+    void subirNivel() {
+        nivel = nivel + 1;
+        ataque = ataque + 5;
+        defensa = defensa + 2;
+        setVida(VIDA_MAX);
+        setEnergia(ENERGIA_MAX);
+        cout << "*** " << nombre << " subio a nivel " << nivel
+             << " (ataque " << ataque << ", defensa " << defensa << ") ***" << endl;
+    }
+
+    void mostrar() const {
+        cout << nombre << " [" << tipo << "] Nv." << nivel
+             << " | vida: " << vida << " | energia: " << energia
+             << " | atq: " << ataque << " | def: " << defensa
+             << " | exp: " << experiencia
+             << " | " << (estaViva() ? "viva" : "derrotada") << endl;
+    }
+
+    bool estaViva() const {
+        return vida > 0;
+    }
+
+    int poderDeAtaque() const {
+        return ataque;
+    }
+
+    bool esMasFuerteQue(const Criatura &otra) const {
+        return (ataque + defensa) > (otra.ataque + otra.defensa);
+    }
+};
+
+int main() {
+    // Plantel de criaturas: algunas creadas con new, otra por defecto.
+    Criatura *dragon = new Criatura("Dragon", "Fuego", 100, 60, 25, 10);
+    Criatura *hidra = new Criatura("Hidra", "Agua", 110, 50, 20, 12);
+    Criatura *fenix = new Criatura("Fenix", "Fuego", 90, 70, 22, 8);
+    Criatura goblin;
+    goblin.setVida(60);
+    goblin.setEnergia(40);
+    goblin.setDefensa(4);
+
+    vector<Criatura*> plantel = {dragon, hidra, fenix, &goblin};
+
+    cout << "-- Estado inicial del plantel --" << endl;
+    for (Criatura *c : plantel) {
+        c->mostrar();
+    }
+
+    cout << "\n-- Descanso previo --" << endl;
+    dragon->descansar();
+    hidra->descansar();
+
+    cout << "\n-- Prueba de validacion del setter --" << endl;
+    cout << "Intentando vida = -50 en fenix..." << endl;
+    fenix->setVida(-50);
+    cout << "Corregido: " << fenix->getVida() << endl;
+    cout << "Intentando vida = 500 en fenix..." << endl;
+    fenix->setVida(500);
+    cout << "Corregido: " << fenix->getVida() << endl;
+    fenix->setVida(90);
+
+    cout << "\n===== Combate 1: Dragon vs Hidra =====" << endl;
+    int ronda = 1;
+    while (dragon->estaViva() && hidra->estaViva()) {
+        cout << "\n-- Ronda " << ronda << " --" << endl;
+        if (ronda % 3 == 0) {
+            dragon->atacarEspecial(*hidra);
+        } else {
+            dragon->atacar(*hidra);
+        }
+        if (hidra->estaViva()) {
+            hidra->atacar(*dragon);
+        }
+        dragon->mostrar();
+        hidra->mostrar();
+        ronda++;
+    }
+
+    Criatura *ganador1 = dragon->estaViva() ? dragon : hidra;
+    Criatura *perdedor1 = dragon->estaViva() ? hidra : dragon;
+    cout << "\n" << ganador1->getNombre() << " gana el combate 1!" << endl;
+    ganador1->ganarExperiencia(60);
+
+    cout << "\n===== Combate 2: " << ganador1->getNombre() << " vs Fenix =====" << endl;
+    ronda = 1;
+    while (ganador1->estaViva() && fenix->estaViva()) {
+        cout << "\n-- Ronda " << ronda << " --" << endl;
+        ganador1->atacar(*fenix);
+        if (fenix->estaViva()) {
+            if (ronda % 2 == 0) {
+                fenix->atacarEspecial(*ganador1);
+            } else {
+                fenix->atacar(*ganador1);
+            }
+        }
+        ganador1->mostrar();
+        fenix->mostrar();
+        ronda++;
+    }
+
+    Criatura *campeon = ganador1->estaViva() ? ganador1 : fenix;
+    Criatura *perdedor2 = ganador1->estaViva() ? fenix : ganador1;
+    cout << "\n" << campeon->getNombre() << " es el campeon del torneo!" << endl;
+    campeon->ganarExperiencia(80);
+
+    cout << "\n-- Curacion de los caidos --" << endl;
+    perdedor1->curar(40);
+    perdedor2->curar(40);
+
+    cout << "\n-- Comparacion de poder --" << endl;
+    if (campeon->esMasFuerteQue(goblin)) {
+        cout << campeon->getNombre() << " es mas fuerte que " << goblin.getNombre() << endl;
+    } else {
+        cout << goblin.getNombre() << " es mas fuerte que " << campeon->getNombre() << endl;
+    }
+
+    cout << "\n-- Estado final del plantel --" << endl;
+    for (Criatura *c : plantel) {
+        c->mostrar();
+    }
+
+    // Se libera todo lo reservado con new (dragon, hidra, fenix).
+    delete dragon;
+    delete hidra;
+    delete fenix;
+
+    // "goblin" esta en la pila: su destructor se invoca solo al
+    // terminar main.
+
+    return 0;
+}
