@@ -32,7 +32,7 @@ private:
     float Ataque;
     float Defenza; //Es un valor porcentual que multiplica al danio recibido
     std::string Nombre;
-    float BuffAtaque;
+    float BuffAtaque; //Es un valor porcentual que multiplica al ataque provocado
     int Experiencia;
     unsigned int Nivel;
 
@@ -157,6 +157,8 @@ public:
 
     int GetEnergia() const { return Energia; }
 
+    unsigned int GetNivel() const { return Nivel; }
+
     //Funciones SET
     void SetEnergia(int _CambioEnergia) { Energia += _CambioEnergia; }
 };
@@ -224,7 +226,7 @@ private:
         std::cout << "= Comienza " << A.GetNombre() << " =" << std::endl;
     }
 
-    //Mediante esta funcion, se realizan los calculos necesarios para el ataque y la defenza. Muestra todo el proceso
+    //Mediante esta funcion, el jugador podra realizar sus ataques, actos o acciones
     void TurnoJugador(Jugador &A, Criatura &B){
 
         //Se llama a los metodos necesarios para que la batalla siga
@@ -245,6 +247,7 @@ private:
         CambioDeTurno(B, false);
     }
 
+    //Maneja la logica del turno de la criatura
     void TurnoCriatura(Criatura &A, Jugador &B){
         //Se llama a los metodos necesarios para que la batalla siga
         B.RecibirDanio(A.Atacar());
@@ -268,6 +271,7 @@ private:
         }
     }
 
+    //Controla todas las opciones que puede realizar el jugador durante una batalla
     void OpcionesDeBatalla(Jugador &Player, Criatura &Enemigo){
         do{
             UI.EjecutarAccion();
@@ -290,6 +294,7 @@ private:
         }while(UI.GetOpcion() == UI.OpcActuar::Regresar);
     }
 
+    //Controla los actos/acciones pasivas que puede realizar el jugador durante una batalla
     void OpcionesDeActo(Jugador &Player, Criatura &Enemigo){
         UI.EjecutarActo(Enemigo, Enemigo.GetNumeroActos());
         switch(UI.GetOpcion()){
@@ -307,22 +312,69 @@ private:
     }
 };
 
+/* N A M E S P A C E S   P R O P I O S */
+namespace GenerarEntidades{
+
+    /* Esta funcion se basa en el uso de rand() para crear la aparicion de enemigos distintos, 
+       favoreciendo asi las partidas aleatorias dentro del juego */
+    Criatura* GenerarCriatura(){
+        int Randomizer = rand()%3;
+        switch(Randomizer){
+            case 0: return new Slime();
+            case 1: return new Criatura();
+            default: break;
+        }
+        return new Slime();
+    }
+
+    /* Esta funcion se basa en el uso del nivel actual del jugador para hacer aparecer los jefes 
+       del juego para, asi, si el jugador tiene un nivel superior a l especificado, no se pueda enfrentar
+       a un jefe que no podra derrotar */
+    Criatura* GenerarBoss(Jugador &Player){
+        if(Player.GetNivel() < 2){
+            return new BossIronGiant();
+        }
+        return new Criatura();
+    }
+
+    /* Esta funcion se basa en el uso de punteros llamados por referencia (*&) para hacer modificacion
+       de los nuevos objetos creados y asi poder eliminarlos del juego con la palabra reservada -delete-.
+       Esto es equivalente al doble puntero en C (**) */
+    void EliminarEntidad(Criatura*& pEntidad){
+        delete pEntidad;
+        pEntidad = nullptr;
+    }
+}
+//Para no escribir el nombre completo del Namespace, se uso la nomenclatura Gen::
+namespace Gen = GenerarEntidades;
+
 int main(){
 
     Criatura Dragon("Dragon", 200, 50, 70, 0.6f, "Enfrentar", false, 1, 100), Goblin; 
     Batalla Battle;
     Jugador Player;
-    Slime Bubble1, Bubble2;
     BossIronGiant GiganteDeHierro;
+    Criatura *Enemy = nullptr; //Variable creada para la Actividad 9 y 10
+    Criatura *Boss = nullptr; //Variable creada para la Actividad 9 y 10
     srand(time(NULL));
 
-    //Definiendo los atributos de cada criatura
+    //Definiendo los atributos de cada Objeto
     Player.EscogerNombre();
 
-    //Lo pedido en la actividad EXTRACURRICULAR
-    Battle.CursoDeBatalla(Player, Bubble1);
-    Battle.CursoDeBatalla(Player, Bubble2);
-    Battle.CursoDeBatalla(Player, GiganteDeHierro);
+    /* Actividades 9 y 10 aplicadas en tiempo real | Tarea Destructores y Encapsulamiento */
+    while(Player.EstaVivo()){
+        for(int i=0; i < 2 && Player.EstaVivo(); i++){
+            Enemy = Gen::GenerarCriatura();
+            Battle.CursoDeBatalla(Player, *Enemy);
+            Gen::EliminarEntidad(Enemy);
+            
+        }
+
+        if(!Player.EstaVivo()) break;
+        Boss = Gen::GenerarBoss(Player);
+        Battle.CursoDeBatalla(Player, *Boss);
+        Gen::EliminarEntidad(Boss);
+    }
 
     return 0;
 }
