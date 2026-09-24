@@ -1,1 +1,238 @@
 En este folder, Javier Mora actualizara sus avances personales del proyecto para que todos los podamos ver y asi ver que podemos agregar al proyecto final.
+#include <iostream>
+#include <string>
+using namespace std;
+// CLASE CRIATURA
+class Criatura
+{
+
+// CONTROL DE ACCESO (ENCAPSULAMIENTO)
+// Atributos privados: protegidos contra modificaciones directas desde fuera
+private:
+    string nombre;
+    int vida;     // Variable MIEMBRO protegida
+    int ataque;   // Variable MIEMBRO protegida
+    int energia;  // Variable MIEMBRO protegida
+
+public:
+    // GETTERS Y SETTERS CON VALIDACIÓN DE RANGO
+
+    // Setter de vida: valida que el rango permitido esté entre 0 y 100
+    void setVida(int v)
+    {
+        if (v < 0)
+        {
+            vida = 0;
+        }
+        else if (v > 100)
+        {
+            vida = 100;
+        }
+        else
+        {
+            vida = v;
+        }
+    }
+
+    // Getter de vida (solo lectura)
+    int getVida() const
+    {
+        return vida;
+    }
+
+    // Setter de energía: valida que el rango permitido esté entre 0 y 100
+    void setEnergia(int e)
+    {
+        if (e < 0)
+        {
+            energia = 0;
+        }
+        else if (e > 100)
+        {
+            energia = 100;
+        }
+        else
+        {
+            energia = e;
+        }
+    }
+
+    // Getter de energía (solo lectura)
+    int getEnergia() const
+    {
+        return energia;
+    }
+
+    // Getter de nombre
+    string getNombre() const
+    {
+        return nombre;
+    }
+
+    // Setter de nombre
+    void setNombre(string n)
+    {
+        nombre = n;
+    }
+
+    // Getter de ataque
+    int getAtaque() const
+    {
+        return ataque;
+    }
+
+    // Setter de ataque
+    void setAtaque(int a)
+    {
+        if (a < 0)
+        {
+            ataque = 0;
+        }
+        else
+        {
+            ataque = a;
+        }
+    }
+
+    // CONSTRUCTORES Y DESTRUCTOR
+
+    // 1. Constructor por defecto---asigna valores base preestablecidos usando setters
+    Criatura()
+    {
+        nombre = "Leon";
+        setVida(70);
+        setAtaque(15);
+        setEnergia(45);
+    }
+
+    // 2. Constructor por parámetros---inicializa atributos mediante setters con validación
+    Criatura(string nombre, int vida, int ataque, int energia)
+    {
+        this->nombre = nombre;
+        setVida(vida);
+        setAtaque(ataque);
+        setEnergia(energia);
+    }
+
+    // 3. Destructor---se ejecuta al destruir el objeto o liberar memoria con delete
+    ~Criatura()
+    {
+        cout << "Se ha destruido la criatura " << nombre << endl;
+    }
+
+    // MÉTODOS DE LA CLASE (USAN SETTERS Y GETTERS)
+
+    // Método recibirDanio: modifica la vida mediante el setter para validar el límite inferior (0)
+    void recibirDanio(int danio)
+    {
+        setVida(getVida() - danio);
+    }
+
+    // Método curar: modifica la vida mediante el setter para validar el límite superior (100)
+    void curar(int cantidad)
+    {
+        setVida(getVida() + cantidad);
+    }
+
+    // Método descansar: recupera energía a través del setter
+    void descansar()
+    {
+        setEnergia(getEnergia() + 15);
+    }
+
+    // Comprueba si la criatura está viva consultando el getter de vida
+    bool estaViva() const
+    {
+        return getVida() > 0;
+    }
+
+    // Devuelve la fuerza de ataque
+    int atacar() const
+    {
+        return getAtaque();
+    }
+
+    // Muestra en pantalla el estado actual de la criatura
+    void mostrar() const
+    {
+        cout << nombre << " | Vida: " << getVida()
+             << " | Energia: " << getEnergia()
+             << " | Ataque: " << getAtaque()
+             << " | Estado: " << (estaViva() ? "Viva" : "Derrotada") << endl;
+    }
+};
+
+// FUNCIÓN MAIN
+int main()
+{
+    // Instanciación en la pila (stack) utilizando el constructor por defecto y por parámetros
+    Criatura leon;
+    Criatura goblin("Goblin", 40, 10, 20);
+
+    // Instanciación dinámica en el montón (heap) usando new
+    Criatura* dragon = new Criatura("Dragon", 100, 25, 50);
+
+    
+    // PRUEBA DE VALIDACIÓN DE SETTERS CON VALORES INVÁLIDOS
+
+    cout << "=== PRUEBA DE VALIDACION EN SETTERS ===" << endl;
+    
+    // Intento de asignar vida negativa
+    cout << "Intentando asignar vida -50 a " << leon.getNombre() << "..." << endl;
+    leon.setVida(-50);
+    cout << "Resultado corregido por setVida: " << leon.getVida() << endl;
+    leon.setVida(70); // Restaurar estado base
+
+    // Intento de asignar vida mayor al límite máximo (100)
+    cout << "Intentando asignar vida 250 a " << dragon->getNombre() << "..." << endl;
+    dragon->setVida(250);
+    cout << "Resultado corregido por setVida: " << dragon->getVida() << endl;
+    cout << endl;
+
+    
+    // ESTADO INICIAL
+    
+    cout << "=== ESTADO INICIAL ===" << endl;
+    leon.mostrar();
+    dragon->mostrar();
+    goblin.mostrar();
+    cout << endl;
+
+    
+    // SIMULACIÓN DE ENFRENTAMIENTO
+    cout << "=== SIMULACION DE ENFRENTAMIENTO ===" << endl;
+    
+    // Leon ataca a Goblin
+    cout << leon.getNombre() << " ataca a " << goblin.getNombre()
+         << " causando " << leon.atacar() << " de danio." << endl;
+    goblin.recibirDanio(leon.atacar());
+
+    // Goblin descansa y se cura
+    cout << goblin.getNombre() << " descansa para recuperar energia..." << endl;
+    goblin.descansar();
+
+    cout << goblin.getNombre() << " se cura 20 puntos de vida." << endl;
+    goblin.curar(20);
+    goblin.mostrar();
+
+    // Dragon ataca a Leon
+    cout << endl << dragon->getNombre() << " ataca a " << leon.getNombre()
+         << " causando " << dragon->atacar() << " de danio." << endl;
+    leon.recibirDanio(dragon->atacar());
+
+    
+    // ESTADO FINAL
+    cout << endl << "=== ESTADO FINAL ===" << endl;
+    leon.mostrar();
+    dragon->mostrar();
+    goblin.mostrar();
+    cout << endl;
+
+
+    // LIBERACIÓN DE MEMORIA DINÁMICA
+    // Cada new se empareja con un delete para evitar fugas de memoria
+    cout << "=== LIBERACION DE MEMORIA ===" << endl;
+    delete dragon; // Llama explícitamente al destructor ~Criatura()
+
+    return 0;
+}
