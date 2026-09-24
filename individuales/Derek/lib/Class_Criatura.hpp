@@ -32,7 +32,7 @@ public:
             float _Defenza, std::string _AccionNombre, bool _EsJefe, int _NumeroDeActos, int _Exp);
 
     //== DESTRUCTORES ==
-    virtual ~Criatura();
+    virtual ~Criatura() = default;
      
     //== METODOS ==
     void Descansa(const std::string& Texto);
