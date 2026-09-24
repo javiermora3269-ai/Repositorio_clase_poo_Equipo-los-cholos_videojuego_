@@ -1,1 +1,551 @@
 En este folder, Luis actualizara sus avances personales del proyecto para que todos los podamos ver y asi ver que podemos agregar al proyecto final.
+
+// =====================================================================
+// Version del Jueguito Actualizada
+// =====================================================================
+
+#include <iostream>
+#include <string>
+#include <cstdlib> // Para rand()
+#include <ctime>   // Para time()
+
+using namespace std;
+
+// ---------------------------------------------------------------------
+// Estructura auxiliar para definir los ataques de cada criatura
+// ---------------------------------------------------------------------
+struct Ataque {
+    string nombre;
+    int danio;
+    int costoEnergia;
+};
+
+// =====================================================================
+// DEFINICION DE LA CLASE: Criatura
+// =====================================================================
+class Criatura {
+private:
+    // -----------------------------------------------------------------
+    // ENCAPSULAMIENTO: Atributos privados
+    // -----------------------------------------------------------------
+    string nombre;
+    int vida;
+    int vidaMaxima;
+    int energia;
+    int energiaMaxima;
+    Ataque ataques[4]; // Arreglo miembro con los 4 ataques de la criatura
+    bool volando;      // Estado especial para la habilidad de Vuelo del Dragon
+
+    // Contadores para controlar los límites de uso
+    int usosCurar;
+    int usosDescansar;
+
+public:
+    // -----------------------------------------------------------------
+    // ENCAPSULAMIENTO: Setters con validación de límites (0 a Máximo)
+    // -----------------------------------------------------------------
+    void setVida(int v) {
+        if (v < 0) {
+            this->vida = 0;
+        } else if (v > this->vidaMaxima) {
+            this->vida = this->vidaMaxima;
+        } else {
+            this->vida = v;
+        }
+    }
+
+    void setEnergia(int e) {
+        if (e < 0) {
+            this->energia = 0;
+        } else if (e > this->energiaMaxima) {
+            this->energia = this->energiaMaxima;
+        } else {
+            this->energia = e;
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // 1. CONSTRUCTOR POR DEFECTO
+    // -----------------------------------------------------------------
+    Criatura() {
+        this->nombre = "Criatura Misteriosa";
+        this->vidaMaxima = 50;
+        this->energiaMaxima = 30;
+        this->volando = false;
+        this->usosCurar = 0;
+        this->usosDescansar = 0;
+
+        setVida(50);
+        setEnergia(30);
+
+        // Ataques por defecto
+        this->ataques[0] = {"Golpe Basico", 10, 5};
+        this->ataques[1] = {"Ataque Fuerte", 15, 10};
+        this->ataques[2] = {"Ataque Rapido", 8, 3};
+        this->ataques[3] = {"Golpe Cargado", 20, 15};
+    }
+
+    // -----------------------------------------------------------------
+    // 2. CONSTRUCTOR CON PARAMETROS
+    // -----------------------------------------------------------------
+    Criatura(string nombre, int vida, int energia, Ataque listaAtaques[4]) {
+        this->nombre = nombre;
+        this->vidaMaxima = vida;
+        this->energiaMaxima = energia;
+        this->volando = false;
+        this->usosCurar = 0;
+        this->usosDescansar = 0;
+
+        setVida(vida);
+        setEnergia(energia);
+
+        for (int i = 0; i < 4; i++) {
+            this->ataques[i] = listaAtaques[i];
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // DESTRUCTOR
+    // -----------------------------------------------------------------
+    ~Criatura() {
+        // Libera los recursos/estado de la instancia
+    }
+
+    // -----------------------------------------------------------------
+    // METODOS DE CONSULTA (Getters)
+    // -----------------------------------------------------------------
+    string obtenerNombre() const { return nombre; }
+    int obtenerVida() const { return vida; }
+    int obtenerVidaMaxima() const { return vidaMaxima; }
+    int obtenerEnergia() const { return energia; }
+    int obtenerEnergiaMaxima() const { return energiaMaxima; }
+    bool estaVolando() const { return volando; }
+
+    // -----------------------------------------------------------------
+    // METODO REQUERIDO: estaViva
+    // -----------------------------------------------------------------
+    bool estaViva() const {
+        return this->vida > 0;
+    }
+
+    // -----------------------------------------------------------------
+    // METODO REQUERIDO: descansar
+    // -----------------------------------------------------------------
+    bool descansar() {
+        if (this->usosDescansar >= 3) {
+            cout << "   [x] Límite de descansos excedido, intente con otra opcion" << endl;
+            return false; // No se pudo realizar la acción
+        }
+
+        int energiaRecuperada = 20;
+
+        setEnergia(this->energia + energiaRecuperada);
+        this->usosDescansar++;
+
+        cout << "   [+] " << this->nombre << " descansa y recupera " 
+             << energiaRecuperada << " pts de energia. (Energia: " 
+             << this->energia << "/" << this->energiaMaxima << ")" << endl;
+        return true; // Acción realizada con éxito
+    }
+
+    // -----------------------------------------------------------------
+    // METODO REQUERIDO: curar 
+    // -----------------------------------------------------------------
+    bool curar() {
+        if (this->usosCurar >= 2) {
+            cout << "   [x] Límite de curaciones excedido, intente con otra opcion" << endl;
+            return false; // No se pudo realizar la acción
+        }
+
+        int vidaRecuperada = 20;
+
+        setVida(this->vida + vidaRecuperada);
+        this->usosCurar++;
+
+        cout << "   [+] " << this->nombre << " se cura y recupera " 
+             << vidaRecuperada << " pts de vida. (Vida: " 
+             << this->vida << "/" << this->vidaMaxima << ")" << endl;
+        return true; // Acción realizada con éxito
+    }
+
+    // -----------------------------------------------------------------
+    // METODO: recibirDanio
+    // -----------------------------------------------------------------
+    void recibirDanio(int danioRecibido, string tipoAtacante) {
+        // Regla especial del VUELO
+        if (this->volando) {
+            if (tipoAtacante != "Dragon") {
+                cout << "   [!]" << this->nombre << " esta en VUELO y esquivo por completo el ataque" << endl;
+                this->volando = false; // El vuelo se consume al esquivar
+                return;
+            } else {
+                cout << "   [!] El atacante tambien es un Dragon. El vuelo fue inutil para esquivar." << endl;
+            }
+        }
+
+        this->volando = false; // Se reinicia el estado de vuelo si recibe el impacto
+
+        int danioAplicado = danioRecibido;
+        setVida(this->vida - danioAplicado);
+
+        cout << "   [-] " << this->nombre << " recibe " << danioAplicado 
+             << " pts de danio. (Vida: " << this->vida << "/" << this->vidaMaxima << ")" << endl;
+    }
+
+    // -----------------------------------------------------------------
+    // METODOS DE ATAQUE
+    // -----------------------------------------------------------------
+    void mostrarAtaques() const {
+        cout << "\n--- ATAQUES DISPONIBLES DE " << nombre << " ---" << endl;
+        for (int i = 0; i < 4; i++) {
+            cout << i + 1 << ". " << ataques[i].nombre 
+                 << " (Danio: " << ataques[i].danio 
+                 << " | Costo Energia: " << ataques[i].costoEnergia << ")" << endl;
+        }
+    }
+
+    Ataque obtenerAtaque(int indice) const {
+        if (indice >= 0 && indice < 4) return ataques[indice];
+        return ataques[0];
+    }
+
+    // Intenta ejecutar el ataque seleccionado. Devuelve true si pudo atacar.
+    bool ejecutarAtaque(int indiceAtaque, Criatura &objetivo) {
+        if (indiceAtaque < 0 || indiceAtaque >= 4) return false;
+
+        Ataque atq = ataques[indiceAtaque];
+
+        // Verificar si cuenta con la energia requerida
+        if (this->energia < atq.costoEnergia) {
+            cout << "   [x] " << this->nombre << " no tiene suficiente energia para usar " 
+                 << atq.nombre << " (Requiere: " << atq.costoEnergia 
+                 << " | Tienes: " << this->energia << ")" << endl;
+            return false;
+        }
+
+        // Restar costo de energia
+        setEnergia(this->energia - atq.costoEnergia);
+        cout << "\n   [>] " << this->nombre << " usa " << atq.nombre << endl;
+
+        // Efecto especial: Vuelo del Dragon
+        if (this->nombre == "Dragon" && atq.nombre == "Vuelo") {
+            this->volando = true;
+            cout << "   [!] El Dragon emprende el vuelo." << endl;
+        }
+
+        // Aplicar daño a la criatura objetivo
+        objetivo.recibirDanio(atq.danio, this->nombre);
+        return true;
+    }
+
+    // -----------------------------------------------------------------
+    // METODO: mostrar
+    // -----------------------------------------------------------------
+    void mostrar() const {
+        cout << "    -> " << nombre << " | Vida: " << vida << "/" << vidaMaxima
+             << " | Energia: " << energia << "/" << energiaMaxima
+             << " | Estado: " << (estaViva() ? "VIVA" : "DERROTADA");
+        if (volando) cout << " [EN VUELO]";
+        cout << endl;
+    }
+};
+
+// =====================================================================
+// FUNCIONES DE FABRICA Y SELECCION
+// =====================================================================
+
+void mostrarMenuCriaturas() {
+    cout << "1. Dragon     (Vida: 120 | Energia: 50)" << endl;
+    cout << "2. Goblin     (Vida: 70  | Energia: 60)" << endl;
+    cout << "3. Caballero  (Vida: 100 | Energia: 50)" << endl;
+    cout << "4. Orco       (Vida: 110 | Energia: 45)" << endl;
+    cout << "5. Fenix      (Vida: 95  | Energia: 65)" << endl;
+}
+
+Criatura crearCriaturaPorOpcion(int opcion) {
+    if (opcion == 1) {
+        Ataque atqs[4] = {
+            {"Llamarada", 25, 15},
+            {"Garrazada", 15, 5},
+            {"Vuelo", 10, 10},     // Ataque especial que activa esquivar
+            {"Coletazo", 18, 8}
+        };
+        return Criatura("Dragon", 120, 50, atqs);
+    } 
+    else if (opcion == 2) {
+        Ataque atqs[4] = {
+            {"Navajazo", 12, 5},
+            {"Lanzar piedra", 15, 8},
+            {"Mordisco", 18, 10},
+            {"Emboscada", 22, 15}
+        };
+        return Criatura("Goblin", 70, 60, atqs);
+    } 
+    else if (opcion == 3) {
+        Ataque atqs[4] = {
+            {"Estocada", 16, 5},
+            {"Golpe de escudo", 20, 10},
+            {"Carga de lanza", 25, 15},
+            {"Espadazo sagrado", 28, 20}
+        };
+        return Criatura("Caballero", 100, 50, atqs);
+    } 
+    else if (opcion == 4) {
+        Ataque atqs[4] = {
+            {"Punetazo", 14, 5},
+            {"Hachazo", 22, 12},
+            {"Aplastar", 26, 16},
+            {"Grito de guerra", 18, 8}
+        };
+        return Criatura("Orco", 110, 45, atqs);
+    } 
+    else if (opcion == 5) {
+        Ataque atqs[4] = {
+            {"Picotazo", 14, 5},
+            {"Pluma de Fuego", 20, 10},
+            {"Rafaga Solar", 26, 16},
+            {"Explosion Fenix", 32, 22}
+        };
+        return Criatura("Fenix", 95, 65, atqs);
+    }
+    else {
+        cout << "\nOpcion no valida. Se asigna criatura por defecto.\n";
+        return Criatura();
+    }
+}
+
+// =====================================================================
+// FUNCION PRINCIPAL (main)
+// =====================================================================
+int main() {
+    srand(time(0));
+
+    // -----------------------------------------------------------------
+    // SECCION 1: Bienvenida y Seleccion de Modo de Juego
+    // -----------------------------------------------------------------
+    cout << "========================================" << endl;
+    cout << "         Bienvenido al Jueguito" << endl;
+    cout << "========================================" << endl << endl;
+
+    int modoJuego = 1;
+    cout << "SELECCIONA EL MODO DE JUEGO:" << endl;
+    cout << "1. 1 Jugador (Player 1 vs IA)" << endl;
+    cout << "2. 2 Jugadores (Player 1 vs Player 2)" << endl;
+    cout << "Elige una opcion: ";
+    cin >> modoJuego;
+
+    int opcionJugador = 0;
+    int opcionOponente = 0;
+
+    // -----------------------------------------------------------------
+    // SECCION 2: Seleccion de Personajes
+    // -----------------------------------------------------------------
+    if (modoJuego == 2) {
+        cout << "\n--- PLAYER 1: SELECCIONA TU CRIATURA ---" << endl;
+    } else {
+        cout << "\n--- SELECCIONA TU CRIATURA ---" << endl;
+    }
+    mostrarMenuCriaturas();
+    cout << "Elige tu opcion: ";
+    cin >> opcionJugador;
+
+    Criatura jugador = crearCriaturaPorOpcion(opcionJugador);
+
+    if (modoJuego == 2) {
+        cout << "\n--- PLAYER 2: SELECCIONA TU CRIATURA ---" << endl;
+        mostrarMenuCriaturas();
+        cout << "Elige tu opcion: ";
+        cin >> opcionOponente;
+    } else {
+        // Seleccion aleatoria para el oponente en modo 1 Jugador
+        opcionOponente = (rand() % 5) + 1;
+        cout << "\nSE HA SELECCIONADO EL OPONENTE DE MANERA ALEATORIA." << endl;
+    }
+
+    Criatura oponente = crearCriaturaPorOpcion(opcionOponente);
+
+    // -----------------------------------------------------------------
+    // SECCION 3: Demostracion de metodos requeridos (estaViva, descansar y curar)
+    // -----------------------------------------------------------------
+    cout << "\n========================================" << endl;
+    cout << "        PRUEBA INICIAL DE METODOS" << endl;
+    cout << "========================================" << endl;
+    cout << "El jugador esta vivo? " << (jugador.estaViva() ? "Si (true)" : "No (false)") << endl;
+    cout << "Probando metodo descansar en jugador:" << endl;
+    jugador.descansar(); // Invoca descansar()
+    cout << "Probando metodo curar en jugador:" << endl;
+    jugador.curar();     // Invoca curar()
+    cout << "========================================\n" << endl;
+
+    // -----------------------------------------------------------------
+    // SECCION 4: Bucle del Combate Interactiva por Rondas
+    // -----------------------------------------------------------------
+    int ronda = 1;
+
+    cout << "========================================" << endl;
+    cout << " EMPIEZA EL COMBATE: " << jugador.obtenerNombre() 
+         << " VS " << oponente.obtenerNombre() << endl;
+    cout << "========================================" << endl;
+
+    while (jugador.estaViva() && oponente.estaViva()) {
+        cout << "\n========================================" << endl;
+        cout << "                ROUND " << ronda << endl;
+        cout << "========================================" << endl;
+        jugador.mostrar();
+        oponente.mostrar();
+
+        // -------------------------------------------------------------
+        // TURNO DEL JUGADOR 1
+        // -------------------------------------------------------------
+        bool accionTurnoValida = false;
+
+        while (!accionTurnoValida && jugador.estaViva()) {
+            cout << "\nQue accion deseas realizar, " << jugador.obtenerNombre() << "?" << endl;
+            cout << "1. Atacar" << endl;
+            cout << "2. Descansar (Recupera energia)" << endl;
+            cout << "3. Curar (Recupera vida)" << endl;
+            cout << "Elige tu accion: ";
+
+            int eleccionAccion = 0;
+            cin >> eleccionAccion;
+
+            if (eleccionAccion == 1) {
+                jugador.mostrarAtaques();
+                cout << "Elige un ataque: ";
+                int numAtaque = 0;
+                cin >> numAtaque;
+
+                accionTurnoValida = jugador.ejecutarAtaque(numAtaque - 1, oponente);
+            } 
+            else if (eleccionAccion == 2) {
+                // Invocacion del metodo descansar() (Retorna false si excede limite)
+                accionTurnoValida = jugador.descansar();
+            } 
+            else if (eleccionAccion == 3) {
+                // Invocacion del metodo curar() (Retorna false si excede limite)
+                accionTurnoValida = jugador.curar();
+            }
+            else {
+                cout << "Opcion no valida. Intenta de nuevo." << endl;
+            }
+        }
+
+        // Verificar si el oponente murio tras el ataque del jugador 1
+        if (!oponente.estaViva()) {
+            cout << "\n" << oponente.obtenerNombre() << " ha sido derrotado" << endl;
+            break;
+        }
+
+        // -------------------------------------------------------------
+        // TURNO DEL OPONENTE / PLAYER 2
+        // -------------------------------------------------------------
+        if (modoJuego == 2) {
+            // TURNO MANUAL PARA PLAYER 2
+            bool accionTurnoValida2 = false;
+
+            while (!accionTurnoValida2 && oponente.estaViva()) {
+                cout << "\n--- TURNO DEL PLAYER 2 (" << oponente.obtenerNombre() << ") ---" << endl;
+                cout << "Que accion deseas realizar, " << oponente.obtenerNombre() << "?" << endl;
+                cout << "1. Atacar" << endl;
+                cout << "2. Descansar (Recupera energia)" << endl;
+                cout << "3. Curar (Recupera vida)" << endl;
+                cout << "Elige tu accion: ";
+
+                int eleccionAccion2 = 0;
+                cin >> eleccionAccion2;
+
+                if (eleccionAccion2 == 1) {
+                    oponente.mostrarAtaques();
+                    cout << "Elige un ataque: ";
+                    int numAtaque2 = 0;
+                    cin >> numAtaque2;
+
+                    accionTurnoValida2 = oponente.ejecutarAtaque(numAtaque2 - 1, jugador);
+                } 
+                else if (eleccionAccion2 == 2) {
+                    accionTurnoValida2 = oponente.descansar();
+                } 
+                else if (eleccionAccion2 == 3) {
+                    accionTurnoValida2 = oponente.curar();
+                }
+                else {
+                    cout << "Opcion no valida. Intenta de nuevo." << endl;
+                }
+            }
+        } else {
+            // TURNO DEL OPONENTE (IA Aleatoria)
+            cout << "\n--- TURNO DEL OPONENTE (" << oponente.obtenerNombre() << ") ---" << endl;
+
+            // Si el oponente tiene poca vida, intentara curarse; si excede el límite, intenta descansar o atacar
+            if (oponente.obtenerVida() < (oponente.obtenerVidaMaxima() * 0.3)) {
+                if (!oponente.curar()) {
+                    if (!oponente.descansar()) {
+                        int ataqueRandom = rand() % 4;
+                        oponente.ejecutarAtaque(ataqueRandom, jugador);
+                    }
+                }
+            }
+            else if (oponente.obtenerEnergia() < 8) {
+                if (!oponente.descansar()) {
+                    int ataqueRandom = rand() % 4;
+                    oponente.ejecutarAtaque(ataqueRandom, jugador);
+                }
+            } 
+            else {
+                int decisionIA = (rand() % 10 < 7) ? 1 : 2; // 70% probabilidad de atacar
+
+                if (decisionIA == 1) {
+                    bool enemigoAtaco = false;
+                    int intentos = 0;
+
+                    while (!enemigoAtaco && intentos < 10) {
+                        int ataqueRandom = rand() % 4;
+                        enemigoAtaco = oponente.ejecutarAtaque(ataqueRandom, jugador);
+                        intentos++;
+                    }
+
+                    if (!enemigoAtaco) {
+                        if (!oponente.descansar()) {
+                            oponente.curar();
+                        }
+                    }
+                } else {
+                    if (!oponente.descansar()) {
+                        oponente.curar();
+                    }
+                }
+            }
+        }
+
+        // Verificar si el jugador murio tras el ataque del oponente / Player 2
+        if (!jugador.estaViva()) {
+            cout << "\n" << jugador.obtenerNombre() << " ha sido derrotado" << endl;
+            break;
+        }
+
+        ronda++;
+    }
+
+    // -----------------------------------------------------------------
+    // SECCION 5: Resultado Final del Combate
+    // -----------------------------------------------------------------
+    cout << "\n========================================" << endl;
+    cout << "            FIN DEL COMBATE" << endl;
+    cout << "========================================" << endl;
+
+    if (jugador.estaViva() && !oponente.estaViva()) {
+        cout << "VICTORIA " << jugador.obtenerNombre() << " es el ganador." << endl;
+    } else if (!jugador.estaViva() && oponente.estaViva()) {
+        cout << "DERROTA " << oponente.obtenerNombre() << " te ha vencido." << endl;
+    } else {
+        cout << "EMPATE. Ambas criaturas cayeron en combate." << endl;
+    }
+
+    cout << "\nEstado Final:" << endl;
+    jugador.mostrar();
+    oponente.mostrar();
+
+    cout << "\nFIN DEL JUEGO" << endl;
+
+    return 0;
+}
