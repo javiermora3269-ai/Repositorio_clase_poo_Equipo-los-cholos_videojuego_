@@ -6,6 +6,7 @@ using namespace std;
 class Criatura
 {
 
+
 // CONTROL DE ACCESO (ENCAPSULAMIENTO)
 // Atributos privados: protegidos contra modificaciones directas desde fuera
 private:
