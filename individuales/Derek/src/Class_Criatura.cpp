@@ -41,9 +41,6 @@ Criatura::Criatura(std::string _Nombre, float _VidaMaxima, int _Energia, float _
     Exp = _Exp;
 }
 
-//== DESTRUCTORES ==
-Criatura::~Criatura(){}
-
 //== METODOS ==
 void Criatura::Descansa(const std::string& Texto){
     std::cout << Texto << "La energia aumento en 15.\n";
