@@ -362,19 +362,14 @@ int main(){
     Player.EscogerNombre();
 
     /* Actividades 9 y 10 aplicadas en tiempo real | Tarea Destructores y Encapsulamiento */
-    while(Player.EstaVivo()){
-        for(int i=0; i < 2 && Player.EstaVivo(); i++){
-            Enemy = Gen::GenerarCriatura();
-            Battle.CursoDeBatalla(Player, *Enemy);
-            Gen::EliminarEntidad(Enemy);
-            
-        }
-
-        if(!Player.EstaVivo()) break;
-        Boss = Gen::GenerarBoss(Player);
-        Battle.CursoDeBatalla(Player, *Boss);
-        Gen::EliminarEntidad(Boss);
+    for(int i=0; i < 2 && Player.EstaVivo(); i++){
+        Enemy = Gen::GenerarCriatura();
+        Battle.CursoDeBatalla(Player, *Enemy);
+        Gen::EliminarEntidad(Enemy);
     }
+    Boss = Gen::GenerarBoss(Player);
+    Battle.CursoDeBatalla(Player, *Boss);
+    Gen::EliminarEntidad(Boss); 
 
     return 0;
 }
