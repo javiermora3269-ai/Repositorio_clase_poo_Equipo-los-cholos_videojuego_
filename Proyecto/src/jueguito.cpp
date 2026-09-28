@@ -1,4 +1,4 @@
-/* L I B R E R I A S   S T A N D A R D / E X T E R N A S */
+/* L I B R E R I A S   S T A N D A R D / E X T E R N A S  */
 #include <iostream>
 #include <string>
 
