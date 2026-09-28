@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <windows.h>
 
 //Funciones de UI
 class UserInterface{
