@@ -9,7 +9,11 @@
    Esto se debera hacer con cada una de las demas funciones agregadas al proyecto para mantener un orden dentro del proyecto.
    Si necesitan agregar librerias externas, agreguenlas directamente a la parte superior junto a <iostream> y las demas.
 */
-#include "../lib/Class_UserInterface.hpp"
+#include "../lib/ModoHistoria/Class_UserInterface.hpp"
+#include "../lib/ModoBatalla/ClaseCombate.hpp"
+#include "../lib/ModoBatalla/ClaseCriatura.hpp"
+#include "../lib/ModoBatalla/ModoDePVE.hpp"
+#include "../lib/ModoBatalla/ModoDePVP.hpp"
 
 /* N A M E S P A C E S */
 
@@ -25,6 +29,8 @@ int main(){
     /* Se crea la interfaz de usuario UI */
     std::string texto = "Bienvenido al juego.";
     bool Termino = false; //ESTA VARIABLE SOLO EXISTE POR AHORA PARA NO TENER UN BUCLE INFINITO INESCESARIO DENTRO DEL PROYECTO
+    ModoDeJuegoPVE PVE;
+    ModoDeJuegoPVP PVP;
 
     // AQUI ES DONDE COMIENZA EL JUEGO DE VERDAD
     do{
@@ -52,14 +58,12 @@ int main(){
                 switch(UI.GetOption()){
                     case 1:
 
-                        std::cout << "Estas dentro del modo PvP" << std::endl;
-                        Termino = true;
+                        PVP.CursoDeCombatePVP();
                         break;
 
                     case 2:
 
-                        std::cout << "Estas dentro del modo PvE" << std::endl;
-                        Termino = true;
+                        PVE.CursoDeBatallaPVE();
                         break;
 
                     default: break;
@@ -72,4 +76,3 @@ int main(){
 
     return 0;
 }
-
