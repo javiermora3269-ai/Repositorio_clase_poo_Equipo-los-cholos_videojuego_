@@ -5,8 +5,7 @@ class BossIronGiant : public Criatura{
 private:
 
     int AtaqueRandom;
-    std::string AccionExlcusivaNombre;
-    std::string AccionParticularNombre;
+    std::string AccionExNombre[2];
     int AccionIntentosEspecial;
     int AccionIntentosExclusiva;
 
@@ -24,7 +23,7 @@ public:
 
     std::string ImprimirActos() const;
 
-    const std::string GetAccionExclusivaNombre() const { return AccionExlcusivaNombre; }
-    const std::string GetAccionParticularNombre() const { return AccionParticularNombre; }
+    const std::string GetAccionEx_0() const { return AccionExNombre[0]; }
+    const std::string GetAccionEx_1() const { return AccionExNombre[1]; }
     
 };
