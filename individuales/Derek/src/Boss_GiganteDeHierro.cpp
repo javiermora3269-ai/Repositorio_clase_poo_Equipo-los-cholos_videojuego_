@@ -5,34 +5,34 @@
 
 BossIronGiant::BossIronGiant() : Criatura("Gigante de Hierro", 350.0f, 150, 35.0f, 0.7f, "Mirar a los Ojos", true, 2, 500){
     AtaqueRandom = 0;
-    AccionExlcusivaNombre = "Confrontar";
-    AccionParticularNombre = "Cortar Energia";
+    AccionExNombre[0] = "Confrontar";
+    AccionExNombre[1] = "Cortar Energia";
     AccionIntentosEspecial = 0;
     AccionIntentosExclusiva = 0;
 }
 
 void BossIronGiant::MostrarDescripcion() {
     std::cout << "   >> La muralla de hierro frente a ti no para de mirarte fijamente <<\n"
-                << "   >> El destello rojo en sus hojos se refleja en todo tu rostro <<\n"
+                << "   >> El destello rojo en sus ojos crea un contraste terrorifico con el blanco de la nieve <<\n"
                 << "   >> Esta decidido a no dejar ni un solo rastro de ti <<\n";
 }
 
 void BossIronGiant::AccionEspecial() {
     if(!GetEsPerdonable()){
-        switch(UI.GetOpcion()){
+        switch(UI.GetBattleOption()){
             case UI.OpcActuar::Especial: 
                 AccionIntentosEspecial += (AccionIntentosExclusiva < 3) ? 0 : 1;
-                if (AccionIntentosEspecial < 2) std::cout << "   -> La muralla plateada ni se inmuta.\n";
+                if (AccionIntentosEspecial < 2) std::cout << "   -> El Gigante Plateado ni se inmuta.\n";
                 else if (AccionIntentosEspecial == 2) std::cout << "   -> El Gigante comienza a ponerse nervioso.\n";
                 else std::cout << "   -> El Gigante ha retirado la vista!!!\n";
                 break;
-            case UI.OpcActuar::Exclusiva:
+            case UI.OpcActuar::ExZero:
                 AccionIntentosExclusiva++;
                 if(AccionIntentosExclusiva < 3){
                     std::cout << "   -> Has confrontado al Gigante de Hierro\n   -> Sus punios gigantes comienzan a tambalear de la furia.\n";
                 } else std::cout << "   -> La seguridad en si mismo ha bajado.\n   -> Ahora, eres un digno oponente.\n";
                 break;
-            case UI.OpcActuar::Particular:
+            case UI.OpcActuar::ExOne:
                 if(AccionIntentosEspecial >= 2){
                     std::cout << "   -> Has apagado al Gigante de Hierro!\n   -> La muralla se sume en una profunda siesta.\n";
                     SetEsPerdonable(true);
@@ -62,12 +62,13 @@ float BossIronGiant::Atacar() {
                 break;
             case 2: 
                 std::cout << "   -> La gran muralla plateada dio un pisoton frente tuyo!\n   -> La onda de choque volco hacia atras!\n"
-                                "   -> Por suerte, estuviste lo suficientemente lejos para no quedar aplastado.\n";
+                             "   -> Por suerte, estuviste lo suficientemente lejos para no quedar aplastado.\n";
                 return Ataque*0.7f;
                 break;
             case 3:
                 std::cout << "   -> Sin previo aviso, el Gigante lanza una rafaja de rayos laceres a tu direccion.\n"
-                                "   -> Aunque lograste cubrirte con una roca, las quemaduras aun dejaron marcas.\n";
+                             "   -> Aunque lograste cubrirte con una roca, las quemaduras aun dejaron marcas.\n"
+                             "   -> Tienes suerte de que haya nieve por todos lados.\n";
                 return Ataque*1.1f;
                 break;
             default: break;
@@ -77,5 +78,5 @@ float BossIronGiant::Atacar() {
 }
 
 std::string BossIronGiant::ImprimirActos() const { 
-    return "3: " + GetAccionNombre() + "  |  4: " + GetAccionExclusivaNombre() + "  |  5: " + GetAccionParticularNombre();
+    return "3: " + GetAccionNombre() + "  |  4: " + GetAccionEx_0() + "  |  5: " + GetAccionEx_1();
 }
