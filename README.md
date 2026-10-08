@@ -4,9 +4,9 @@ Repositorio de documentación para el proyecto final de videojuego de la asignat
 Nombre de equipo: Los Cholos 
 Grupo:3A Mecatronica.
 Integrantes de equipo:
-Javier Mora Gutierrez 222432699
-Erick Yael Ramos Ramirez 225975324
-Luis Fernando Duarte Zárate 225975219
-christian Osvaldo Guzman Orozco 221527157
-Omar Contreras Paz 225975421
-Derek Salcido Gonzàlez 225975499
+- Javier Mora Gutierrez 222432699
+- Erick Yael Ramos Ramirez 225975324
+- Luis Fernando Duarte Zárate 225975219
+- Christian Osvaldo Guzman Orozco 221527157
+- Omar Contreras Paz 225975421
+- Derek Salcido Gonzàlez 225975499
