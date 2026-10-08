@@ -2,7 +2,9 @@
 Repositorio de documentación para el proyecto final de videojuego de la asignatura Programación Orientada a Objetos. Desarrollado por el equipo "Los Cholos".
 
 Nombre de equipo: Los Cholos 
-Grupo:3A Mecatronica.
+
+Grupo: 3A Mecatrónica.
+
 Integrantes de equipo:
 - Javier Mora Gutierrez 222432699
 - Erick Yael Ramos Ramírez 225975324
