@@ -1,0 +1,252 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// CLASE BASE: Criatura
+class Criatura
+{
+private: // atributos estrictamente en private
+    string nombre;      // ATRIBUTO DE OBJETO
+    int vida;           // ATRIBUTO DE OBJETO
+    int ataque;         // ATRIBUTO DE OBJETO
+    int energia;        // ATRIBUTO DE OBJETO
+
+    static int contador; // ATRIBUTO DE CLASE (static)
+
+public:
+    // MÉTODOS DE CLASE
+    static int cuantasHay() // MÉTODO DE CLASE (static)
+    {
+        return contador;
+    }
+
+    // MÉTODOS DE OBJETO (GETTERS Y SETTERS CON VALIDACIÓN DE RANGO)
+    void setVida(int v) // MÉTODO DE OBJETO
+    {
+        if (v < 0)
+        {
+            vida = 0;
+        }
+        else if (v > 100)
+        {
+            vida = 100;
+        }
+        else
+        {
+            vida = v;
+        }
+    }
+
+    int getVida() const // MÉTODO DE OBJETO
+    {
+        return vida;
+    }
+
+    void setEnergia(int e) // MÉTODO DE OBJETO
+    {
+        if (e < 0)
+        {
+            energia = 0;
+        }
+        else if (e > 100)
+        {
+            energia = 100;
+        }
+        else
+        {
+            energia = e;
+        }
+    }
+
+    int getEnergia() const // MÉTODO DE OBJETO
+    {
+        return energia;
+    }
+
+    string getNombre() const // MÉTODO DE OBJETO
+    {
+        return nombre;
+    }
+
+    void setNombre(string n) // MÉTODO DE OBJETO
+    {
+        nombre = n;
+    }
+
+    int getAtaque() const // MÉTODO DE OBJETO
+    {
+        return ataque;
+    }
+
+    void setAtaque(int a) // MÉTODO DE OBJETO
+    {
+        if (a < 0)
+        {
+            ataque = 0;
+        }
+        else
+        {
+            ataque = a;
+        }
+    }
+
+    // CONSTRUCTORES SOBRECARGADOS
+    Criatura() // MÉTODO DE OBJETO
+    {
+        nombre = "Leon";
+        setVida(70);
+        setAtaque(15);
+        setEnergia(45);
+        contador++;
+    }
+
+    Criatura(string nombre, int vida, int ataque, int energia) // MÉTODO DE OBJETO
+    {
+        this->nombre = nombre;
+        setVida(vida);
+        setAtaque(ataque);
+        setEnergia(energia);
+        contador++;
+    }
+
+    // DESTRUCTOR
+    virtual ~Criatura() // MÉTODO DE OBJETO
+    {
+        cout << "Se ha destruido la criatura " << nombre << endl;
+        contador--;
+    }
+
+    // MÉTODOS DE OBJETO HEREDABLES
+    void recibirDanio(int danio)
+    {
+        setVida(getVida() - danio);
+    }
+
+    void curar()
+    {
+        setVida(getVida() + 10);
+    }
+
+    void curar(int cantidad)
+    {
+        setVida(getVida() + cantidad);
+    }
+
+    void descansar()
+    {
+        setEnergia(getEnergia() + 15);
+    }
+
+    bool estaViva() const
+    {
+        return getVida() > 0;
+    }
+
+    int atacar() const
+    {
+        return getAtaque();
+    }
+
+    void mostrar() const // MÉTODO DE OBJETO
+    {
+        cout << nombre << " | Vida: " << getVida()
+             << " | Energia: " << getEnergia()
+             << " | Ataque: " << getAtaque()
+             << " | Estado: " << (estaViva() ? "Viva" : "Derrotada") << endl;
+    }
+};
+
+// Definición del atributo estático fuera de la clase
+int Criatura::contador = 0;
+
+// PRIMERA CLASE DERIVADA: Guerrero
+class Guerrero : public Criatura
+{
+private:
+    int armadura; // ATRIBUTO DE OBJETO
+
+public:
+    Guerrero(string n, int v, int a, int e, int arm)
+        : Criatura(n, v, a, e)
+    {
+        armadura = arm;
+    }
+
+    void golpePotente(Criatura &objetivo)
+    {
+        // Se usan getters en lugar de acceso directo a miembros private
+        int danioExtra = getAtaque() + 15;
+        cout << getNombre() << " ejecuta un GOLPE POTENTE contra " 
+             << objetivo.getNombre() << " infligiendo " << danioExtra << " de danio!" << endl;
+        objetivo.recibirDanio(danioExtra);
+    }
+
+    int getArmadura() const { return armadura; }
+};
+
+// SEGUNDA CLASE DERIVADA: Mago
+class Mago : public Criatura
+{
+private:
+    int mana; // ATRIBUTO DE OBJETO
+
+public:
+    Mago(string n, int v, int a, int e, int m)
+        : Criatura(n, v, a, e)
+    {
+        mana = m;
+    }
+
+    void lanzarHechizo(Criatura &objetivo)
+    {
+        if (mana >= 10)
+        {
+            mana -= 10;
+            // Se usan getters en lugar de acceso directo a miembros private
+            int danioMagico = getAtaque() + 20;
+            cout << getNombre() << " lanza un HECHIZO a " << objetivo.getNombre() 
+                 << " causando " << danioMagico << " de danio magico! (Mana restante: " << mana << ")" << endl;
+            objetivo.recibirDanio(danioMagico);
+        }
+        else
+        {
+            cout << getNombre() << " no tiene suficiente mana para lanzar un hechizo." << endl;
+        }
+    }
+
+    int getMana() const { return mana; }
+};
+
+// FUNCIÓN MAIN
+int main()
+{
+    cout << "=== PRUEBA DE HERENCIA SIMPLE ===" << endl;
+    cout << "Criaturas vivas al inicio: " << Criatura::cuantasHay() << endl << endl;
+
+    Guerrero guerrero("Thorin", 90, 20, 50, 10);
+    Mago mago("Gandalf", 70, 15, 60, 40);
+
+    cout << "Criaturas vivas tras instanciacion: " << Criatura::cuantasHay() << endl << endl;
+
+    cout << "=== ESTADO INICIAL (METODOS HEREDADOS) ===" << endl;
+    guerrero.mostrar();
+    mago.mostrar();
+    cout << endl;
+
+    cout << "=== DEMOSTRACION DE METODOS PROPIOS ===" << endl;
+    
+    guerrero.golpePotente(mago);
+    mago.mostrar();
+    cout << endl;
+
+    mago.lanzarHechizo(guerrero);
+    guerrero.mostrar();
+    cout << endl;
+
+    cout << guerrero.getNombre() << " usa el metodo heredado curar()..." << endl;
+    guerrero.curar(15);
+    guerrero.mostrar();
+    cout << endl;
+
+    return 0;
+}
