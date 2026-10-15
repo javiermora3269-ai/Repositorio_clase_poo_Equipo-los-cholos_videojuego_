@@ -1,0 +1,265 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// CLASE BASE: Criatura
+class Criatura
+{
+    // Cambiado de private a protected para permitir acceso en clases derivadas
+protected:
+    string nombre;
+    int vida;    
+    int ataque;  
+    int energia; 
+
+    // Atributo estático para contar cuántas instancias existen
+    static int contador;
+
+public:
+    // Método estático para consultar el contador
+    static int cuantasHay()
+    {
+        return contador;
+    }
+
+    // GETTERS Y SETTERS CON VALIDACIÓN DE RANGO
+
+    void setVida(int v)
+    {
+        if (v < 0)
+        {
+            vida = 0;
+        }
+        else if (v > 100)
+        {
+            vida = 100;
+        }
+        else
+        {
+            vida = v;
+        }
+    }
+
+    int getVida() const
+    {
+        return vida;
+    }
+
+    void setEnergia(int e)
+    {
+        if (e < 0)
+        {
+            energia = 0;
+        }
+        else if (e > 100)
+        {
+            energia = 100;
+        }
+        else
+        {
+            energia = e;
+        }
+    }
+
+    int getEnergia() const
+    {
+        return energia;
+    }
+
+    string getNombre() const
+    {
+        return nombre;
+    }
+
+    void setNombre(string n)
+    {
+        nombre = n;
+    }
+
+    int getAtaque() const
+    {
+        return ataque;
+    }
+
+    void setAtaque(int a)
+    {
+        if (a < 0)
+        {
+            ataque = 0;
+        }
+        else
+        {
+            ataque = a;
+        }
+    }
+
+    // CONSTRUCTORES SOBRECARGADOS
+    Criatura()
+    {
+        nombre = "Leon";
+        setVida(70);
+        setAtaque(15);
+        setEnergia(45);
+        contador++;
+    }
+
+    Criatura(string nombre, int vida, int ataque, int energia)
+    {
+        this->nombre = nombre;
+        setVida(vida);
+        setAtaque(ataque);
+        setEnergia(energia);
+        contador++;
+    }
+
+    // DESTRUCTOR
+    virtual ~Criatura()
+    {
+        cout << "Se ha destruido la criatura " << nombre << endl;
+        contador--;
+    }
+
+    // MÉTODOS HEREDABLES DE LA CLASE BASE
+    void recibirDanio(int danio)
+    {
+        setVida(getVida() - danio);
+    }
+
+    void curar()
+    {
+        setVida(getVida() + 10);
+    }
+
+    void curar(int cantidad)
+    {
+        setVida(getVida() + cantidad);
+    }
+
+    void descansar()
+    {
+        setEnergia(getEnergia() + 15);
+    }
+
+    bool estaViva() const
+    {
+        return getVida() > 0;
+    }
+
+    int atacar() const
+    {
+        return getAtaque();
+    }
+
+    void mostrar() const
+    {
+        cout << nombre << " | Vida: " << getVida()
+             << " | Energia: " << getEnergia()
+             << " | Ataque: " << getAtaque()
+             << " | Estado: " << (estaViva() ? "Viva" : "Derrotada") << endl;
+    }
+};
+
+// Definición del atributo estático fuera de la clase
+int Criatura::contador = 0;
+
+// PRIMERA CLASE DERIVADA: Guerrero (Hereda de Criatura)
+class Guerrero : public Criatura
+{
+private:
+    int armadura; // ATRIBUTO PROPIO: Nivel de protección extra
+
+public:
+    // Constructor que llama al constructor de la clase base
+    Guerrero(string n, int v, int a, int e, int arm)
+        : Criatura(n, v, a, e) // Llamada al constructor base
+    {
+        armadura = arm; // Inicialización de atributo propio
+    }
+
+    // MÉTODO PROPIO DE GUERRERO
+    void golpePotente(Criatura &objetivo)
+    {
+        int danioExtra = ataque + 15; // Usa atributos heredados (ataque)
+        cout << nombre << " ejecuta un GOLPE POTENTE contra " 
+             << objetivo.getNombre() << " infligiendo " << danioExtra << " de danio!" << endl;
+        objetivo.recibirDanio(danioExtra); // Usa método heredado
+    }
+
+    int getArmadura() const { return armadura; }
+};
+
+// SEGUNDA CLASE DERIVADA: Mago (Hereda de Criatura)
+class Mago : public Criatura
+{
+private:
+    int mana; // ATRIBUTO PROPIO: Reserva mágica
+
+public:
+    // Constructor que llama al constructor de la clase base
+    Mago(string n, int v, int a, int e, int m)
+        : Criatura(n, v, a, e) // Llamada al constructor base
+    {
+        mana = m; // Inicialización de atributo propio
+    }
+
+    // MÉTODO PROPIO DE MAGO
+    void lanzarHechizo(Criatura &objetivo)
+    {
+        if (mana >= 10)
+        {
+            mana -= 10;
+            int danioMagico = ataque + 20;
+            cout << nombre << " lanza un HECHIZO a " << objetivo.getNombre() 
+                 << " causando " << danioMagico << " de danio magico! (Mana restante: " << mana << ")" << endl;
+            objetivo.recibirDanio(danioMagico);
+        }
+        else
+        {
+            cout << nombre << " no tiene suficiente mana para lanzar un hechizo." << endl;
+        }
+    }
+
+    int getMana() const { return mana; }
+};
+
+
+// FUNCIÓN MAIN
+
+int main()
+{
+    cout << "=== PRUEBA DE HERENCIA SIMPLE ===" << endl;
+    cout << "Criaturas vivas al inicio: " << Criatura::cuantasHay() << endl << endl;
+
+    // Instanciación de objetos de las clases derivadas
+    Guerrero guerrero("Thorin", 90, 20, 50, 10);
+    Mago mago("Gandalf", 70, 15, 60, 40);
+
+    cout << "Criaturas vivas tras instanciacion: " << Criatura::cuantasHay() << endl << endl;
+
+    // 1. USO DE MÉTODOS HEREDADOS (mostrar() se hereda de Criatura)
+    cout << "=== ESTADO INICIAL (METODOS HEREDADOS) ===" << endl;
+    guerrero.mostrar(); // Heredado de Criatura
+    mago.mostrar();     // Heredado de Criatura
+    cout << endl;
+
+    // 2. USO DE MÉTODOS PROPIOS DE CADA CLASE DERIVADA
+    cout << "=== DEMOSTRACION DE METODOS PROPIOS ===" << endl;
+    
+    // El Guerrero usa su método propio (golpePotente)
+    guerrero.golpePotente(mago);
+    mago.mostrar(); // Método heredado
+    cout << endl;
+
+    // El Mago usa su método propio (lanzarHechizo)
+    mago.lanzarHechizo(guerrero);
+    guerrero.mostrar(); // Método heredado
+    cout << endl;
+
+    // Uso de método heredado curar()
+    cout << guerrero.getNombre() << " usa el metodo heredado curar()..." << endl;
+    guerrero.curar(15); // Heredado de Criatura
+    guerrero.mostrar();
+    cout << endl;
+
+    return 0;
+}
