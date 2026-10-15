@@ -1,0 +1,297 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Clase Protegida
+class Objeto
+{
+protected:
+    string nombre;
+};
+
+class curacion : public Objeto
+{
+protected:
+    int curacion;
+};
+
+class superpocion : public curacion
+{
+    int velocidad;
+    // Constructor por defecto
+    superpocion()
+    {
+        velocidad = 15;
+        curacion = 25;
+        nombre = "Superpocion";
+    }
+
+    ~superpocion() {}
+};
+
+// CLASE CRIATURA
+class Criatura
+{
+    // CONTROL DE ACCESO (ENCAPSULAMIENTO)
+private:
+    string nombre;
+    int vida;    // Variable MIEMBRO protegida
+    int ataque;  // Variable MIEMBRO protegida
+    int energia; // Variable MIEMBRO protegida
+
+    // Atributo estático para contar cuantas instancias existen
+    static int contador;
+
+public:
+    // Método estático para consultar el contador
+    static int cuantasHay()
+    {
+        return contador;
+    }
+
+    // GETTERS Y SETTERS CON VALIDACIÓN DE RANGO
+
+    // Setter de vida: valida que el rango permitido esté entre 0 y 100
+    void setVida(int v)
+    {
+        if (v < 0)
+        {
+            vida = 0;
+        }
+        else if (v > 100)
+        {
+            vida = 100;
+        }
+        else
+        {
+            vida = v;
+        }
+    }
+
+    // Getter de vida (solo lectura)
+    int getVida() const
+    {
+        return vida;
+    }
+
+    // Setter de energía: valida que el rango permitido esté entre 0 y 100
+    void setEnergia(int e)
+    {
+        if (e < 0)
+        {
+            energia = 0;
+        }
+        else if (e > 100)
+        {
+            energia = 100;
+        }
+        else
+        {
+            energia = e;
+        }
+    }
+
+    // Getter de energía (solo lectura)
+    int getEnergia() const
+    {
+        return energia;
+    }
+
+    // Getter de nombre
+    string getNombre() const
+    {
+        return nombre;
+    }
+
+    // Setter de nombre
+    void setNombre(string n)
+    {
+        nombre = n;
+    }
+
+    // Getter de ataque
+    int getAtaque() const
+    {
+        return ataque;
+    }
+
+    // Setter de ataque
+    void setAtaque(int a)
+    {
+        if (a < 0)
+        {
+            ataque = 0;
+        }
+        else
+        {
+            ataque = a;
+        }
+    }
+
+    // =========================================================================
+    // CONSTRUCTORES SOBRECARGADOS (SOBRECARGA DE CONSTRUCTORES)
+    // =========================================================================
+
+    // 1. Constructor por defecto (sin parámetros: asigna valores base)
+    Criatura()
+    {
+        nombre = "Leon";
+        setVida(70);
+        setAtaque(15);
+        setEnergia(45);
+        contador++; // aqui se agrega el contador
+    }
+
+    // 2. Constructor por parámetros (recibe todos los datos)
+    Criatura(string nombre, int vida, int ataque, int energia)
+    {
+        this->nombre = nombre;
+        setVida(vida);
+        setAtaque(ataque);
+        setEnergia(energia);
+        contador++; //aqui se agerga el contador
+    }
+
+    // DESTRUCTOR
+    ~Criatura()
+    {
+        cout << "Se ha destruido la criatura " << nombre << endl;
+        contador--; //aqui se agrea el contador, este va restando
+    }
+
+    // MÉTODOS DE LA CLASE
+
+    // Método recibirDanio
+    void recibirDanio(int danio)
+    {
+        setVida(getVida() - danio);
+    }
+
+    // =========================================================================
+    // MÉTODOS SOBRECARGADOS (SOBRECARGA DE MÉTODOS)
+    // =========================================================================
+
+    // Versión 1: sin parámetros (recupera una cantidad por defecto de 10 de vida)
+    void curar()
+    {
+        setVida(getVida() + 10);
+    }
+
+    // Versión 2: con parámetro (recupera la cantidad exacta especificada)
+    void curar(int cantidad)
+    {
+        setVida(getVida() + cantidad);
+    }
+
+    // Método descansar
+    void descansar()
+    {
+        setEnergia(getEnergia() + 15);
+    }
+
+    // Comprueba si la criatura está viva
+    bool estaViva() const
+    {
+        return getVida() > 0;
+    }
+
+    // Devuelve la fuerza de ataque
+    int atacar() const
+    {
+        return getAtaque();
+    }
+
+    // Muestra en pantalla el estado actual de la criatura
+    void mostrar() const
+    {
+        cout << nombre << " | Vida: " << getVida()
+             << " | Energia: " << getEnergia()
+             << " | Ataque: " << getAtaque()
+             << " | Estado: " << (estaViva() ? "Viva" : "Derrotada") << endl;
+    }
+};
+
+
+
+// Definición del atributo static fuera de la clase 
+int Criatura::contador = 0;
+// FUNCIÓN MAIN
+int main()
+{
+    // 1. Contador al inicio 
+    cout << "=== PRUEBA DE MIEMBRO STATIC ===" << endl;
+    cout << "Criaturas vivas al inicio: " << Criatura::cuantasHay() << endl << endl;
+
+    // Instanciación utilizando sobrecarga de constructores:
+    Criatura leon;                         // Constructor por defecto (+1)
+    Criatura goblin("Goblin", 40, 10, 20); // Constructor con parámetros (+1)
+
+    // Instanciación dinámica en el montón (heap)
+    Criatura *dragon = new Criatura("Dragon", 100, 25, 50); // (+1)
+
+    // 2. Contador tras crear las 3 criaturas (debe marcar 3)
+    cout << "Criaturas vivas tras instanciacion: " << Criatura::cuantasHay() << endl << endl;
+
+    // PRUEBA DE VALIDACIÓN DE SETTERS CON VALORES INVÁLIDOS
+    cout << "=== PRUEBA DE VALIDACION EN SETTERS ===" << endl;
+    cout << "Intentando asignar vida -50 a " << leon.getNombre() << "..." << endl;
+    leon.setVida(-50);
+    cout << "Resultado corregido por setVida: " << leon.getVida() << endl;
+    leon.setVida(70); // Restaurar estado base
+
+    cout << "Intentando asignar vida 250 a " << dragon->getNombre() << "..." << endl;
+    dragon->setVida(250);
+    cout << "Resultado corregido por setVida: " << dragon->getVida() << endl;
+    cout << endl;
+
+    // ESTADO INICIAL
+    cout << "=== ESTADO INICIAL ===" << endl;
+    leon.mostrar();
+    dragon->mostrar();
+    goblin.mostrar();
+    cout << endl;
+
+    // SIMULACIÓN DE ENFRENTAMIENTO Y DEMOSTRACIÓN DE SOBRECARGA
+    cout << "=== SIMULACION DE ENFRENTAMIENTO Y SOBRECARGA DE METODOS ===" << endl;
+
+    // Leon ataca a Goblin
+    cout << leon.getNombre() << " ataca a " << goblin.getNombre()
+         << " causando " << leon.atacar() << " de danio." << endl;
+    goblin.recibirDanio(leon.atacar());
+    goblin.mostrar();
+
+    // Goblin usa curar() sin parámetros (Sobrecarga Versión 1)
+    cout << endl
+         << goblin.getNombre() << " usa curar() [sin parametros -> +10 HP]..." << endl;
+    goblin.curar();
+    goblin.mostrar();
+
+    // Goblin usa curar(20) con parámetro (Sobrecarga Versión 2)
+    cout << endl
+         << goblin.getNombre() << " usa curar(20) [con parametro -> +20 HP]..." << endl;
+    goblin.curar(20);
+    goblin.mostrar();
+
+    // Dragon ataca a Leon
+    cout << endl
+         << dragon->getNombre() << " ataca a " << leon.getNombre()
+         << " causando " << dragon->atacar() << " de danio." << endl;
+    leon.recibirDanio(dragon->atacar());
+
+    // ESTADO FINAL
+    cout << endl
+         << "ESTADO FINAL" << endl;
+    leon.mostrar();
+    dragon->mostrar();
+    goblin.mostrar();
+    cout << endl;
+
+    // LIBERACIÓN DE MEMORIA DINÁMICA
+    cout << "LIBERACION DE MEMORIA" << endl;
+    delete dragon; // Llama explícitamente al destructor ~Criatura() (-1)
+
+    // 3. Contador tras destruir una instancia (debe marcar 2)
+    cout << "Criaturas vivas tras eliminar al dragon: " << Criatura::cuantasHay() << endl;
+
+    return 0;
+}
