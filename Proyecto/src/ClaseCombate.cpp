@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "../lib/ModoBatalla/ClaseCriatura.hpp"
-#include "../lib/ModoBatalla/ClaseCombate.hpp"
+#include "../lib/ModoCombate/ClaseCriatura.hpp"
+#include "../lib/ModoCombate/ClaseCombate.hpp"
 
 //MENU PARA EL JUGADOR
 void Combate::MenuDeJuego(){

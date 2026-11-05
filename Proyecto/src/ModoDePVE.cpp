@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "../lib/ModoBatalla/ClaseCriatura.hpp"
-#include "../lib/ModoBatalla/ModoDePVE.hpp"
+#include "../lib/ModoCombate/ClaseCriatura.hpp"
+#include "../lib/ModoCombate/ModoDePVE.hpp"
 
 
 void ModoDeJuegoPVE::ejecutarTurnoIA(Criatura &oponente, Criatura &jugador, int dificultad)

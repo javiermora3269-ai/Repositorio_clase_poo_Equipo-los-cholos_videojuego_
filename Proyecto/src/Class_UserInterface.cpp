@@ -1,7 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <limits>
-#include "../lib/Class_UserInterface.hpp"
+#include "../lib/ModoHistoria/Class_UserInterface.hpp"
 
 //Funciones de UI
 void UserInterface::Output(const std::string& texto, unsigned long VelocidadT, unsigned long VelocidadTM){

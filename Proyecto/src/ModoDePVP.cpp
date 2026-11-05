@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "../lib/ModoBatalla/ClaseCriatura.hpp"
-#include "../lib/ModoBatalla/ModoDePVP.hpp"
+#include "../lib/ModoCombate/ClaseCriatura.hpp"
+#include "../lib/ModoCombate/ModoDePVP.hpp"
 
 void ModoDeJuegoPVP::CursoDeCombatePVP(){
     std::cout << "\n--- PLAYER 1: SELECCIONA TU CRIATURA ---" << std::endl;

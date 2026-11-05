@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "../lib/ModoBatalla/ClaseCriatura.hpp"
+#include "../lib/ModoCombate/ClaseCriatura.hpp"
 
     // -----------------------------------------------------------------
     // ENCAPSULAMIENTO: Setters con validación de límites (0 a Máximo)

@@ -10,10 +10,10 @@
    Si necesitan agregar librerias externas, agreguenlas directamente a la parte superior junto a <iostream> y las demas.
 */
 #include "../lib/ModoHistoria/Class_UserInterface.hpp"
-#include "../lib/ModoBatalla/ClaseCombate.hpp"
-#include "../lib/ModoBatalla/ClaseCriatura.hpp"
-#include "../lib/ModoBatalla/ModoDePVE.hpp"
-#include "../lib/ModoBatalla/ModoDePVP.hpp"
+#include "../lib/ModoCombate/ClaseCombate.hpp"
+#include "../lib/ModoCombate/ClaseCriatura.hpp"
+#include "../lib/ModoCombate/ModoDePVE.hpp"
+#include "../lib/ModoCombate/ModoDePVP.hpp"
 
 /* N A M E S P A C E S */
 

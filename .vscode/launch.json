@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "console": "externalTerminal",
+      "cwd": "c:/Users/salgo/OneDrive/Desktop/Jueguito/Repositorio_clase_poo_Equipo-los-cholos_videojuego_/Proyecto/src",
+      "program": "c:/Users/salgo/OneDrive/Desktop/Jueguito/Repositorio_clase_poo_Equipo-los-cholos_videojuego_/Proyecto/src/build/Debug/outDebug"
+    }
+  ]
+}
