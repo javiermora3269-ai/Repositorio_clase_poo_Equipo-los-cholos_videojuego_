@@ -1,6 +1,8 @@
 /* L I B R E R I A S   S T A N D A R D / E X T E R N A S  */
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <ctime>
 
 /* L I B R E R I A S   P R O P I A S */
 /* 
@@ -10,12 +12,18 @@
    Si necesitan agregar librerias externas, agreguenlas directamente a la parte superior junto a <iostream> y las demas.
 */
 #include "../lib/ModoHistoria/Class_UserInterface.hpp"
+#include "../lib/ModoHistoria/All_Entities.hpp"
+#include "../lib/ModoHistoria/Class_Batalla.hpp"
+#include "../lib/ModoHistoria/Nmsp_GenerarEntidades.hpp"
+#include "../lib/ModoHistoria/story/Prologo.hpp"
+
 #include "../lib/ModoCombate/ClaseCombate.hpp"
 #include "../lib/ModoCombate/ClaseCriatura.hpp"
 #include "../lib/ModoCombate/ModoDePVE.hpp"
 #include "../lib/ModoCombate/ModoDePVP.hpp"
 
 /* N A M E S P A C E S */
+namespace Gen = GenerarEntidades;
 
 /* F U N C I O N E S */
 void DisplayMenu(int Uno_Dos){
@@ -34,28 +42,91 @@ int main(){
 
     // AQUI ES DONDE COMIENZA EL JUEGO DE VERDAD
     do{
-        UI.Output("== BIENVENIDO A JUEGUITO ==", 25, 25);
+        UI.MostrarTexto("== BIENVENIDO A JUEGUITO ==", 25, 25);
         DisplayMenu(1);
         UI.Input(0, 2, "");
-        switch(UI.GetOption()){
+        switch(UI.GetHistoryOption()){
             case 0: 
                 Termino = true; 
                 break;
-            case 1:
+            case 1: // MODO HISTORIA
+            {
+                srand(time(NULL));
 
-                // CREAR FUNCION DONDE SE DESARROLLE LA TOTALIDAD DE LA HISTORIA
-                std::cout << "Estas dentro del modo historia" << std::endl;
-                Termino = true;
+                //Criatura Dragon("Dragon", 200, 50, 70, 0.6f, "Enfrentar", false, 1, 100); 
+                Entity *Enemy = nullptr; 
+                Entity *Boss = nullptr; //Variable creada para la Actividad 9 y 10
+                Batalla *Battle = new Batalla();
+                int LEALTAD{0}, Capitulo{0};
+                Jugador Player;
+
+                /* SAVE FILE MANAGER */
+                std::string current_file{};
+                {
+                    std::ifstream saved_file{};
+
+                    UI.MostrarTexto("Que partida deseas iniciar? Escribe solo el numero:\n", 20, 20);
+                    UI.Input(1, 3, "   Archivo 1 | Archivo 2 | Archivo 3");
+                    switch(UI.GetHistoryOption()){
+                        case 1: current_file = "../saved/file1.dat"; saved_file.open("../saved/file1.dat"); break;
+                        case 2: current_file = "../saved/file2.dat"; saved_file.open("../saved/file2.dat"); break;
+                        case 3: current_file = "../saved/file3.dat"; saved_file.open("../saved/file3.dat"); break;
+                        default: std::cout << "Could not open";
+                    }
+
+                    if(saved_file.fail()) std::cout << "Could not open";
+                    else {
+                        int new_experiencia{};
+                        std::string new_nombre{};
+
+                        saved_file >> new_experiencia;
+                        saved_file >> new_nombre;
+                        saved_file >> Capitulo;
+
+                        if(!(new_experiencia == 0 && Capitulo == 0)){
+                            Player.SetExperiencia(new_experiencia);
+                            Player.SetNombre(new_nombre);
+                            Player.Textless_AumentarNivel();
+                        }
+                    }
+
+                    saved_file.close();
+                }
+
+                //IGNORAR ESTE APARTADO EN CADA RESVISION. NO CUMPLE NINGUNA FUNCION ESPECIAL POR AHORA
+                system("cls");
+                if(Capitulo == 0){
+                PROLOGO::Contexto(Player, LEALTAD);
+                PROLOGO::Etapa_0();
+                Enemy = Gen::GenerarCriatura(Capitulo); 
+                Battle->CursoDeBatalla(Player, *Enemy);
+                Gen::EliminarEntidad(Enemy);
+
+                Enemy = Gen::GenerarCriatura(Capitulo); 
+                Battle->CursoDeBatalla(Player, *Enemy);
+                Gen::EliminarEntidad(Enemy);
+                Capitulo = 1;
+                }
+
+                if(Capitulo == 1){
+                PROLOGO::Etapa_Final();
+
+                Boss = Gen::GenerarBoss(Capitulo);
+                Battle->CursoDeBatalla(Player, *Boss);
+                Gen::EliminarEntidad(Boss);
+                }
+
+                delete Battle;
                 break;
-
-            case 2: 
+            }
+            case 2: // MODO COMBATE
 
                 // CREAR FUNCIONES DONDE SE DESARROLLEN CADA UNO DE LOS MODOS DE JUEGO
                 DisplayMenu(2);
                 UI.Input(1, 3, "");
 
                 // EJEMPLO DE IMPLEMENTACION DE LOS MODOS DE JUEGO 
-                switch(UI.GetOption()){
+                switch(UI.GetBattleOption()){
                     case 1:
 
                         PVP.CursoDeCombatePVP();
