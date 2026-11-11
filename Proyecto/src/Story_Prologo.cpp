@@ -124,6 +124,63 @@ namespace PROLOGO {
         std::cout << std::endl;
         
     }
+    //Etapa 1
+    void etapa_1(Jugador &Player){
+        system("cls");
+        UI.MostrarTexto("Etapa 1", 100, 100); Sleep(825);
+        UI.MostrarTexto("   >> En este momento te encuentras frente al campamento abandonado <<", 50, 200); Sleep(475);
+        UI.MostrarTexto("   >> En frente tuyo estan los restos de uns fogata y un cuerpo congelado <<", 50, 200); Sleep(475);
+        UI.MostrarTexto("   >> Deseas seguir adelante? <<", 50, 200); Sleep(475);
+        UI.Input(0, 1, "   | 1: Seguir adelante | 0: Esperar |");
+        while(!UI.GetHistoryOption()){
+            UI.MostrarTexto("...", 100, 100); Sleep(825);
+            UI.MostrarTexto("   >> Es bastante frio y solitario este lugar verdad <<", 50, 200); Sleep(475);
+            UI.MostrarTexto("   >> Sabes, un lugar asi de solitario alberga muchos peligros <<", 50, 200); Sleep(475);
+            UI.MostrarTexto("...", 100, 100); Sleep(825);
+            UI.MostrarTexto("   >> Pero necesitas hacer esto <<", 50, 200); Sleep(475);
+            UI.MostrarTexto("...", 100, 100); Sleep(825);
+            UI.MostrarTexto("   >> Deseas un tip para pasar sobrevivir en este luagr? <<", 50, 200); Sleep(475);
+            UI.Input(0, 1, "   | 1: Si | 0: No |");
+            if(UI.GetHistoryOption()){
+                UI.MostrarTexto("   >> Explora con cautela y estate atento, pero nunca pierdas el interes por explorar <<", 50, 200); Sleep(475);
+                UI.MostrarTexto("   >> Si te mantienes alerta, podras sobrevivir <<", 50, 200); Sleep(475);
+                UI.MostrarTexto("   >> <<", 50, 200); Sleep(475);
+            }
+            UI.MostrarTexto("...", 100, 100); Sleep(825);
+            UI.MostrarTexto("   >> Deseas seguir adelante? <<", 50, 200); Sleep(475);
+            UI.Input(0, 1, "   | 1: Seguir adelante | 0: Esperar |");
+        }
+        system("cls");
+        UI.MostrarTexto("...", 100, 100); Sleep(825);
+        UI.MostrarTexto("   >> Un viento gelido aletea entre los restos del campamento <<", 50, 200); Sleep(475);
+        UI.MostrarTexto("   >> Deseas seguir adelante o resguardate del viento? <<", 50, 200); Sleep(475);
+        UI.Input(0, 1, "   | 1: Seguir adelante | 0: Resguardarse |");
+
+        if(UI.GetHistoryOption()){
+            // Opcion 1: Seguir adelante (Avanza a la fuerza, recibe danio)
+            UI.MostrarTexto("   >> Avanzas a la fuerza sin detenerte, desafiando el viento gelido... <<", 45, 150);
+            Sleep(500);
+            Player.RecibirDanio(5.0f); // Resta 5 de vida
+            UI.MostrarTexto("   >> El hielo corta tu piel y recibes danio por congelamiento . <<\n", 40, 150);
+            Player.MostrarVida();
+            std::cout << "\n\n";
+            Sleep(800);
+        } else {
+            // Opcion 0: Resguardarse (Se cubre con los brazos, consume energia)
+            UI.MostrarTexto("   >> Te cubres firmemente con los brazos y buscas refugio contra el viento. <<", 45, 150);
+            Sleep(500);
+
+            Player.SetEnergia(-10); // Resta 10 de energia
+
+            UI.MostrarTexto("   >> Logras evitar el danio, pero mantenerte firme agota tus fuerzas . <<\n", 40, 150);
+            Player.MostrarEnergia();
+            std::cout << "\n\n";
+            Sleep(800);
+        }
+    }
+
+
+
 
     void Etapa_Final(){
         UI.MostrarTexto("   >> Has llegado hasta el Muro Acerado <<", 50, 200); Sleep(475);
